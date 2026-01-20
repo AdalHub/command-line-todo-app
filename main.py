@@ -9,7 +9,7 @@ def loadfile():
             tasks = json.load(file)
             return tasks
     else:
-        tasks = []
+        tasks = {}
     return tasks
 
 def writefile(tasks):
