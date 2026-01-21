@@ -1,11 +1,18 @@
 
-
+from colorama import init
+from display_title import display_rainbow_title 
 import json
 import os
 
+
+# Get the directory where the script is located
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Build the full path to tasks.json
+TASKS_FILE = os.path.join(SCRIPT_DIR, "tasks.json")
 def loadfile():
-    if os.path.exists("tasks.json"):
-        with open("tasks.json", "r") as file:
+    if os.path.exists(TASKS_FILE):
+        with open(TASKS_FILE, "r") as file:
             tasks = json.load(file)
             return tasks
     else:
@@ -117,4 +124,6 @@ def main():
             quit = True
             print("Exiting the task manager. Goodbye!")
 if __name__ == "__main__":
+    init(autoreset=True)
+    display_rainbow_title()
     main()
