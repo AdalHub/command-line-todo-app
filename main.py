@@ -1,85 +1,35 @@
 
-from colorama import init
-from display_title import display_rainbow_title 
-import json
 import os
+from colorama import init, Fore, Style
+from display_title import display_rainbow_title 
+from note_rest_func.rest_func import (
+    loadfile,
+    writefile,
+    edit_task_collection,
+    delete_task_collection,
+    add_task_collection,
+    view_task_collections,
+    view_all_tasks_from_all_collections,
+)
 
 
-# Get the directory where the script is located
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Build the full path to tasks.json
-TASKS_FILE = os.path.join(SCRIPT_DIR, "tasks.json")
-def loadfile():
-    if os.path.exists(TASKS_FILE):
-        with open(TASKS_FILE, "r") as file:
-            tasks = json.load(file)
-            return tasks
-    else:
-        tasks = {}
-    return tasks
 
-def writefile(tasks):
-    try:
-        with open("tasks.json", "w") as file:
-            json.dump(tasks, file)
-    except Exception as e: 
-        print(f"An error occurred while writing to the file: {e}")
-        return False
-    return True
-
-def edit_task_collection(collection_name, tasks):
-    print("Currently editing task collection:", collection_name)
-    print("Tasks in this collection:")
-    for idx, task in enumerate(tasks[collection_name], start=1):
-        print(f"{idx}. {task}")
-    action = input("Do you want to add or remove a task? (add/remove): ")
-    if action == "add":
-        new_task = input("Enter the new task: ")
-        tasks[collection_name].append(new_task)
-        print(f"Task '{new_task}' added to collection '{collection_name}'.")
-    elif action == "remove":
-        task_num = int(input("Enter the number of the task to remove: "))
-        if 1<=task_num <=len(tasks[collection_name]):
-            removed_task= tasks[collection_name].pop(task_num-1)
-            print(f"Task '{removed_task}' removed from collection '{collection_name}'.")
-        else:
-            print("Invalid task number.")
-    else:
-        print("Invalid action.")
-
-def delete_task_collection(collection_name, tasks):
-    if collection_name in tasks:
-        del tasks[collection_name]
-        print(f"Task collection '{collection_name}' deleted.")
-    else:
-        print("Collection not found.")
-
-def add_task_collection(tasks):
-    new_collection_name = input("Enter the name of the new task collection: ")
-    tasks[new_collection_name] = []
-    print(f"Task collection '{new_collection_name}' added.")
-
-def view_task_collections(tasks):
-    print("Task Collections:")
-    for collection in tasks:
-        print(f"- {collection}")
-def view_all_tasks_from_all_collections(tasks):
-    print("All Tasks from All Collections:")
-    for collection in tasks:
-        print(f"Collection: {collection}")
-        for task in tasks[collection]:
-            print(f" - {task}")
 def main():
     quit = False
+    # Get the directory where the script is located
+    SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+    # Build the full path to tasks.json
+    TASKS_FILE = os.path.join(SCRIPT_DIR, "tasks.json")
     while not quit:
 
 
 
         messages=[
-            "WELCOME TO file-based-task-manager!",
-            "This is a simple task manager that stores tasks in a file.",
-            "Enter a digit associated with the action you want to perform:",
+            "WELCOME TO to-do-y!",
+            "A simple task manager that stores tasks in a JSON file. \n",
+            "Enter a digit associated with the action you want to perform: \n",
             "1. View all tasks from all collections",
             "2. View task collections",
             "3. Add a new task collection",
@@ -91,8 +41,7 @@ def main():
         for message in messages:
             print(message)
 
-        tasks = loadfile()
-
+        tasks = loadfile(TASKS_FILE)
         choice = input("Your choice: ")
         print(f"You selected option {choice}")
         if choice == "1":
@@ -101,18 +50,19 @@ def main():
             view_task_collections(tasks)
         elif choice == "3":
             add_task_collection(tasks)
-            writefile(tasks)
+            writefile(tasks, TASKS_FILE)  # ← Pass the path
         elif choice == "4":
             collection_name = input("Enter the name of the task collection to edit: ")
             if collection_name in tasks:
-                edit_task_collection(collection_name, tasks)
-                writefile(tasks)
+                    edit_task_collection(collection_name, tasks)
+                    writefile(tasks, TASKS_FILE)  # ← Pass the path
             else:
                 print("Collection not found.")
         elif choice == "5":
             collection_name = input("Enter the name of the task collection to delete: ")
             delete_task_collection(collection_name, tasks)
-            writefile(tasks)
+            writefile(tasks, TASKS_FILE)  # ← Pass the path
+
         elif choice == "6":
             quit = True
             print("Exiting the task manager. Goodbye!")
